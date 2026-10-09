@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="960" viewBox="0 0 1600 960" role="img" aria-labelledby="title desc">
+<title id="title">Agent Arena 0.3.0</title>
+<desc id="desc">独立思考，证据先于共识。 独立提案 → 交叉审核 → 修订与验证. 可选模式: 伴随检查, 完全体监督.</desc>
+<defs>
+  <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0d223a"/><stop offset="1" stop-color="#071526"/></linearGradient>
+  <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#41e3d2"/><stop offset="1" stop-color="#66a9ff"/></linearGradient>
+</defs>
+<rect width="1600" height="960" fill="#071526"/>
+<path d="M0 0H800V5H0Z" fill="#41e3d2"/><path d="M800 0H1600V5H800Z" fill="#66a9ff"/>
+<g font-family="Noto Sans CJK SC" text-rendering="geometricPrecision">
+
+<path d="M92 84L65 100V132L92 148" fill="none" stroke="#41e3d2" stroke-width="5" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M108 84L135 100V132L108 148" fill="none" stroke="#66a9ff" stroke-width="5" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M80 116H120" fill="none" stroke="#f1f7fe" stroke-width="3" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="162" y="147" font-size="82" fill="#f1f7fe" font-weight="700">Agent Arena</text>
+<text x="68" y="220" font-size="32" fill="#9aafc7" font-weight="400">独立思考，证据先于共识。</text>
+<rect x="1376" y="85" width="154" height="56" rx="28" fill="#102b43" stroke="#2f5773"/>
+<text x="1453" y="122" font-size="25" fill="#41e3d2" font-weight="600" text-anchor="middle">v0.3.0</text>
+<path d="M68 268H1532" fill="none" stroke="#24415b" stroke-width="1" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="68" y="313" font-size="22" fill="#9aafc7" font-weight="400">异构模型 · 讨论流程</text>
+<path d="M432 405H474C584 405 609 534 716 534H861C979 534 1012 405 1166 405" fill="none" stroke="#41e3d2" stroke-width="10" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M432 529H474C584 529 609 400 716 400H861C979 400 1012 529 1166 529" fill="none" stroke="#66a9ff" stroke-width="10" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="86" y="365" width="346" height="82" rx="15" fill="#0e263d" stroke="#41e3d2" stroke-opacity=".52"/>
+<circle cx="130" cy="406" r="21" fill="#41e3d2" fill-opacity=".12"/>
+<text x="173" y="416" font-size="29" fill="#f1f7fe" font-weight="500">模型 A</text>
+<circle cx="432" cy="405" r="6" fill="#41e3d2"/>
+<rect x="86" y="489" width="346" height="82" rx="15" fill="#0e263d" stroke="#66a9ff" stroke-opacity=".52"/>
+<circle cx="130" cy="530" r="21" fill="#66a9ff" fill-opacity=".12"/>
+<text x="173" y="540" font-size="29" fill="#f1f7fe" font-weight="500">模型 B</text>
+<circle cx="432" cy="529" r="6" fill="#66a9ff"/>
+<circle cx="790" cy="467" r="78" fill="#0d223a" stroke="#355c7d" stroke-width="2"/>
+<path d="M749 444H827M815 432L827 444L815 456" fill="none" stroke="#41e3d2" stroke-width="5" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M831 490H753M765 478L753 490L765 502" fill="none" stroke="#66a9ff" stroke-width="5" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1166" y="361" width="348" height="213" rx="18" fill="#0d223a" stroke="#446985" stroke-width="1.5"/>
+<text x="1193" y="401" font-size="25" fill="#f1f7fe" font-weight="600">以证据修订</text>
+<path d="M1193 419H1488" fill="none" stroke="#24415b" stroke-width="1" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1195 448L1202 455L1215 442" fill="none" stroke="#41e3d2" stroke-width="3" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1233" y="454" font-size="23" fill="#9aafc7" font-weight="400">核查事实</text>
+<path d="M1195 489L1202 496L1215 483" fill="none" stroke="#41e3d2" stroke-width="3" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1233" y="495" font-size="23" fill="#9aafc7" font-weight="400">修正方案</text>
+<path d="M1195 530L1202 537L1215 524" fill="none" stroke="#66a9ff" stroke-width="3" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1233" y="536" font-size="23" fill="#9aafc7" font-weight="400">保留异议</text>
+<text x="260" y="647" font-size="30" fill="#f1f7fe" font-weight="600" text-anchor="middle">独立提案</text>
+<text x="260" y="685" font-size="21" fill="#9aafc7" font-weight="400" text-anchor="middle">先各自形成判断</text>
+<text x="790" y="647" font-size="30" fill="#f1f7fe" font-weight="600" text-anchor="middle">交叉审核</text>
+<text x="790" y="685" font-size="21" fill="#9aafc7" font-weight="400" text-anchor="middle">交换证据与反对意见</text>
+<text x="1340" y="647" font-size="30" fill="#f1f7fe" font-weight="600" text-anchor="middle">修订与验证</text>
+<text x="1340" y="685" font-size="21" fill="#9aafc7" font-weight="400" text-anchor="middle">让结论经得起检查</text>
+<path d="M68 730H1532" fill="none" stroke="#24415b" stroke-width="1" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="68" y="776" font-size="21" fill="#9aafc7" font-weight="400">可选模式</text>
+<path d="M84 819H146M84 847H146" fill="none" stroke="#41e3d2" stroke-width="3" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="100" cy="819" r="6" fill="#071526" stroke="#41e3d2" stroke-width="3"/>
+<circle cx="131" cy="847" r="6" fill="#071526" stroke="#41e3d2" stroke-width="3"/>
+<text x="177" y="837" font-size="29" fill="#f1f7fe" font-weight="600">伴随检查</text>
+<text x="177" y="882" font-size="23" fill="#9aafc7" font-weight="400">并行检查，主代理继续工作</text>
+<path d="M794 801V901" fill="none" stroke="#24415b" stroke-width="1" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M853 821H920" fill="none" stroke="#66a9ff" stroke-width="3" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="853" cy="821" r="6" fill="#071526" stroke="#66a9ff" stroke-width="3"/>
+<circle cx="885" cy="821" r="6" fill="#071526" stroke="#66a9ff" stroke-width="3"/>
+<circle cx="917" cy="821" r="6" fill="#071526" stroke="#66a9ff" stroke-width="3"/>
+<path d="M877 851L885 859L901 841" fill="none" stroke="#66a9ff" stroke-width="3" opacity="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="957" y="837" font-size="29" fill="#f1f7fe" font-weight="600">完全体监督</text>
+<text x="957" y="882" font-size="23" fill="#9aafc7" font-weight="400">逐步验收，最终审核通过</text>
+</g></svg>

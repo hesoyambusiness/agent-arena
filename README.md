@@ -3,7 +3,7 @@
 > **Evidence-first multi-agent debate for Claude Code × Codex** — a second opinion that survives cross-examination.
 
 <p align="center">
-  <img src="assets/banner.png" alt="Agent Arena — multi-agent debate, red-team review, evidence checking, and judge workflows" width="100%">
+  <img src="assets/banner.png" alt="Agent Arena 0.3.0 — independent proposals, cross-review and evidence-based revision; optional parallel companion review and supervised execution" width="100%">
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
   <a href="#claude-code"><img src="https://img.shields.io/badge/Claude%20Code-portable%20skill-6b46c1" alt="Claude Code"></a>
   <a href="#openai-codex"><img src="https://img.shields.io/badge/OpenAI%20Codex-portable%20skill-111827" alt="OpenAI Codex"></a>
   <a href="#hermes-agent"><img src="https://img.shields.io/badge/Hermes%20Agent-skill-059669" alt="Hermes Agent"></a>
-  <img src="https://img.shields.io/badge/version-0.2.8-informational" alt="version">
+  <img src="https://img.shields.io/badge/version-0.3.0-informational" alt="version">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
 </p>
 
@@ -27,9 +27,9 @@ Not for: simple factual lookups · formatting · routine small edits.
 
 It is designed for **Claude Code, OpenAI Codex, Hermes Agent, OpenClaw, OpenCode, Copilot CLI, and other AI coding agents** that support custom skills, custom instructions, or tool-driven delegation.
 
-**Works with alternative model backends.** Many people run Claude Code on non-Anthropic models (GLM, DeepSeek, Qwen, Kimi, Doubao) through an Anthropic-compatible proxy, or run those same models directly through Codex's OpenAI-compatible API. Agent Arena treats a different model family as a genuinely heterogeneous participant — so you can pit GLM against Codex, DeepSeek against Claude, or any cross-model panel, not just Anthropic-vs-OpenAI. See [Alternative Model Backends](skills/agent-arena/SKILL.md#alternative-model-backends).
+**Works with alternative model backends.** Many people run Claude Code on non-Anthropic models (GLM, DeepSeek, Qwen, Kimi, Doubao) through an Anthropic-compatible proxy, or run those same models directly through Codex's OpenAI-compatible API. Agent Arena treats a different model family as a genuinely heterogeneous participant — so you can pit GLM against Codex, DeepSeek against Claude, or any cross-model panel, not just Anthropic-vs-OpenAI. See [Alternative Model Backends](skills/agent-arena/references/runtime.md#preflight-and-identity).
 
-> **Important:** this repository is a protocol/instruction skill, not an executable orchestrator. It does not install, authenticate, or automatically call Codex, Claude Code, or any other agent. Cross-agent execution depends on the host agent, local CLI availability, authentication, sandbox permissions, network access, and user approval for sensitive data.
+> **Important:** this repository is a protocol/instruction skill with an optional local result parser, not an executable orchestrator. It does not install, authenticate, or automatically call Codex, Claude Code, or any other agent. Cross-agent execution depends on the host agent, local CLI availability, authentication, sandbox permissions, network access, and user approval for sensitive data.
 
 This project is not affiliated with Anthropic, OpenAI, Hermes Agent, OpenClaw, OpenCode, or GitHub Copilot.
 
@@ -79,7 +79,7 @@ Core principle:
 - [`agent-arena`](skills/agent-arena/SKILL.md) — the main heterogeneous multi-agent review protocol.
 - [`deliberative-analysis`](skills/deliberative-analysis/SKILL.md) — a lightweight companion for anti-overconfidence, anti-tunnel-vision, non-obvious alternatives, and escalation into Agent Arena.
 
-**Companion (separate repo):** [`groundcheck`](https://github.com/zhjai/groundcheck) — single-agent, evidence-grounded fact-checking that catches **hallucinations**. Agent Arena treats overconfidence (multi-agent debate); groundcheck treats hallucination (single-agent verification). Plug it in as a **pre-debate fact-gate**: `refuted` claims are sent back to their source agent before debate. Two depths of one verification stack.
+**Companion (separate repo):** [`groundcheck`](https://github.com/zhjai/groundcheck) — single-agent, evidence-grounded fact-checking that catches **hallucinations**. Agent Arena treats overconfidence (multi-agent debate); groundcheck treats hallucination (single-agent verification). Optionally use it when installed for **pre-debate fact checking**: `refuted` claims are sent back to their source agent before debate. Two depths of one verification stack.
 
 ## Use cases
 
@@ -107,6 +107,34 @@ Typical request:
 ```text
 Use complete Arena mode to handle this task. Let Arena plan and check every step, and report which steps succeeded or failed and why.
 ```
+
+## Companion subagent: automatic background checks
+
+Enable `companion_review` to keep a strong-model subagent alongside the primary agent. Before starting it, confirm the model and reasoning effort together. The primary then sends each completed step and correction for review **and continues working immediately**. The same child checks the evidence concurrently and reports problems; routine passes stay quiet. You do not need to ask for another Arena check after each step.
+
+The overlay stays enabled for the current primary session and its task resumptions until you turn it off. A finished task leaves the child available for the next task. Normal pending reviews do not block progress; a concrete blocker pauses only affected work, and final completion reconciles outstanding reviews and fixes. No default turn, round, or total elapsed-time cap is set. Actual host limits are disclosed; an observation timeout from a wait tool is not a reason to cancel the child, and a skill cannot keep it running outside the host's lifecycle.
+
+Companionship is an optional overlay, and can use a model from the same family. Arena's main function remains heterogeneous discussion and review: the companion does not replace a different-family participant or change a saved Arena route. You can run a design discussion while the companion keeps checking primary work.
+
+```text
+Enable companion subagent mode. Confirm a strong model and reasoning effort with me first.
+Keep checking my agent's completed steps in the background while it works, until I say to turn it off.
+```
+
+See the [companion protocol](skills/agent-arena/references/companion-review.md) for configuration, review queues, recovery, and final checks.
+
+## What happens when I say “discuss with Arena”?
+
+By default the primary and heterogeneous participants receive the same request, constraints, and raw evidence, record independent proposals, and **then** exchange them for cross-review and revision. The primary may draft privately in parallel; its preferred solution is not fed to the other participants first. The result preserves disagreements and uncertainty.
+
+| Request | Workflow |
+|---|---|
+| Discuss a feature or code design | Independent designs, then cross-review (`design_debate` / `collaborative_design`) |
+| Discuss a code bug | Independent root-cause hypotheses and decisive tests (`bug_root_cause_arena`) |
+| Discuss an analysis or competing options | Independent evidence assessment or alternatives, then critique (`evidence_arena` / `deliberative_analysis`) |
+| Review this existing plan or diff | Share that artifact immediately for independent critique (`implementation_plan_review` / `code_review_arena`) |
+| Enable companion review | Automatically check completed steps concurrently; the primary keeps planning and executing |
+| Use complete Arena | Arena gives the next instruction; the primary executes it and waits for verification (`supervised_execution`) |
 
 ## Capability and safety boundaries
 
@@ -177,10 +205,10 @@ cp -R agent-arena/skills/deliberative-analysis "${CODEX_HOME:-$HOME/.codex}/skil
 Then start a new Codex session and ask:
 
 ```text
-Use agent-arena. You are Codex; invite Claude Code as the heterogeneous counterpart if it is installed, authenticated, and callable. If shell access exists, first check `command -v claude && claude --version`; do not treat absence from built-in subagent tools as absence of Claude Code. Start with a compact task packet, but allow Claude Code to read relevant source/docs/tests inside the approved repo scope when needed. Exclude secrets, datasets, generated results, private logs, and unrelated directories unless explicitly approved. When using Claude Code print mode with Read/Glob/Grep, remember that `--max-turns` counts tool interaction turns; use enough budget for file exploration and pass raw excerpts with paths/line numbers when the evidence set is already closed. Never replace raw evidence with the orchestrator's summary. If Claude returns `error_max_turns`, treat it as a mechanical failure, not a substantive answer: first check whether an open design/architecture review was mis-boxed as bounded verification (it needs broad read-only tools + ample turns), then use one lossless retry (resume, higher cap, and a convergence contract) — and stop to ask the user before any move that narrows what the reviewer can independently examine. For non-trivial work, run multi-round critique/revision instead of one-shot. If the task is to design/build something together, use `collaborative_design` and treat Claude Code as co-designer/architecture partner rather than only reviewer. Otherwise disclose degraded mode.
+Use Arena to discuss this design. Have Codex and the approved heterogeneous participant independently propose solutions, then exchange critiques. Reuse the selected route and authorization. Report the mode, models, successes, failures and unfinished work.
 ```
 
-On the first Arena invocation for a project, run a minimal harmless completion to preflight the default route, then ask one short participant-route question showing the resolved harness/provider and model family. If the default fails, report that failure and present only already-passing alternatives in the same setup exchange; never silently fall back or start a second route questionnaire. A user-named alternative is preflighted before it is saved or launched; remember only the selected project route and reuse it for later rounds and `继续`. A saved route that later fails preflight requires an explicit switch or disclosed solo mode, never an automatic fallback. Resolve the participant route from the host's configured deployment or local policy; record the actual host and model in the checkpoint without exposing credentials. Route preflight does not authorize sending project content: obtain separate per-run approval for the exact repository scope before external access. Host-specific route data and Arena run artifacts should be kept outside version control (for example, gitignore `.arena/`) or stored in a host-local state directory.
+For heterogeneous Arena, preflight and confirm a participant route once unless the user already selected it. Reuse the route and existing content/action authorization within their scope; a saved route alone grants no content permission. Use an approved fallback or ask for the missing choice if a route fails. Exact model/provider choices must not be silently replaced. Keep route data and run artifacts outside version control. See [runtime guidance](skills/agent-arena/references/runtime.md) and [result state](skills/agent-arena/references/state-and-results.md).
 
 #### Hermes Agent
 
@@ -209,15 +237,33 @@ skills/agent-arena/SKILL.md
 skills/deliberative-analysis/SKILL.md
 ```
 
-If your agent has a custom skills directory, copy the full skill folders there. Otherwise, paste the relevant `SKILL.md` as an instruction guide. Support level depends on the host agent; this repository does not provide platform-specific runtime adapters.
+If your agent has a custom skills directory, copy the full skill folders there. Otherwise, supply `SKILL.md` and its relevant linked references as instruction guides. Support level depends on the host agent; this repository does not provide platform-specific runtime adapters.
 
 ## Default cross-agent rule
 
-- When running inside **Codex**, invite **Claude Code** by default **if available and allowed**. If shell access exists, Codex should check `command -v claude && claude --version` before falling back to same-model subagents; the external `claude` CLI counts as the heterogeneous counterpart even if it is not exposed as a built-in Codex agent tool. On first use, preflight routes and ask once which passing participant route to remember; reuse it across rounds and `继续`. Context minimization should not block useful review: allow Claude Code to read relevant source/docs/tests within the approved repo scope, while excluding secrets, datasets, generated results, private logs, and unrelated directories unless explicitly approved. In Claude Code print mode, size `--max-turns` for expected file/tool exploration. `error_max_turns` before any answer is a mechanical orchestration failure, not a substantive result: first check whether you boxed an **open design/architecture review** (which needs broad read-only tools + ample turns) as bounded verification — that misclassification, not the turn number, is the usual cause. Retry **once with lossless moves only** (resume session, raise the cap, and add an explicit turn-budget contract); **stop and ask the user before any lossy move** that narrows what the reviewer can independently examine (disabling `Read` for orchestrator-picked excerpts, narrowing scope, or accepting a no-critique result) — limiting the reviewer's tools to force a pass is the very failure arena exists to prevent. For non-trivial arenas, run multi-round critique/revision rather than a single one-shot call. If the user asks to design/build something together, use `collaborative_design` and make Claude Code a co-designer/architecture partner, not merely a reviewer.
-- When running inside **Claude Code**, honor a saved route or explicit one-run override first; otherwise invite **Codex** by default **if available and allowed**. If shell access exists, check `command -v codex && codex --version` before falling back. On first use, preflight and ask once which passing route to remember; re-check the saved family on every run.
-- When running inside **Hermes Agent**, **OpenClaw**, or another orchestrator, apply the same saved-route/first-use confirmation rule; do not launch both agents before route setup completes.
-- If a counterpart is unavailable, disclose the degraded mode instead of pretending same-model roleplay is equivalent.
-- If the task involves private or sensitive material, get permission and minimize/redact context before sending it to another agent or service.
+Use the user's explicit choice, then the saved project route, then the current agent plus an available different model family. Codex normally pairs with Claude Code; Claude normally pairs with Codex. Check external CLIs even when they are absent from native subagent tools. Alternative backends count by actual model family, not harness name.
+
+Preflight the selected route with an authenticated completion. Reuse approved recipient/model/content/action scopes, redact credentials, and ask only about missing authorization or an unapproved change. Already approved fallback and retry policies remain valid. Companion configuration is separate and never replaces heterogeneous participation.
+
+## When Arena finishes
+
+- **Discussion:** independent proposals followed by real exchanged critique. Further rounds address material disagreement, new evidence or user instruction.
+- **Existing artifact:** one substantive review can be enough. Findings are blocking, non-blocking or unknown; optional suggestions do not hold delivery automatically.
+- **Until convergence:** every requested participant accepts the same final revision with no unresolved material blocker. Pending participants cannot be omitted. Keep non-blocking dissent visible.
+- **Companion / supervision:** preserve their separate final reconciliation and approval rules, with no default turn/time caps.
+
+Review changes and affected dependencies while keeping necessary unchanged context available. Say whether a result covers design, code, actual output, runtime or measured effects. An approval of one does not prove the others. Always report mode/models, successes, failed attempts and causes, and unfinished coverage.
+
+## Result collection and validation
+
+The optional [Claude result parser](skills/agent-arena/scripts/arena_result.py) distinguishes process state, failure, answer availability and parsing. It never marks review quality as passed, never starts calls and never changes raw logs. Use manual inspection if it cannot parse a format. See [result fields and examples](skills/agent-arena/references/state-and-results.md).
+
+```bash
+python3 skills/agent-arena/scripts/arena_result.py /path/to/result.jsonl --process-state exited --exit-code 0
+python3 -m unittest discover -s tests -v
+```
+
+The main skill loads detailed [modes](skills/agent-arena/references/modes.md), [runtime operations](skills/agent-arena/references/runtime.md), and specialized mode contracts only when needed. For packet examples, see [Running reviews](docs/running-reviews.md). Copy the whole skill directory, including references and scripts, when installing.
 
 ## Example prompts
 
@@ -260,6 +306,7 @@ Agent Arena supports these modes:
 - `decision_memo_arena` — high-stakes recommendation with dissent and uncertainty.
 - `tree_search` — explore a large option space with branching strategies.
 - `full_arena` — independent generation, evidence, critique, revision, blind judging, synthesis.
+- `companion_review` — persistent automatic subagent checks alongside primary work; confirm model and reasoning effort, keep working while reviews run, and reconcile at task completion. This overlay does not replace heterogeneous Arena.
 - `supervised_execution` — Arena plans and verifies each Arena-authorized execution step; the primary agent executes the first planned step and later steps after Arena's `PASS`, returns evidence, and only then relays the detailed answer after the final check. Answer-only requests receive the same final check. The run cannot finish until Arena returns `APPROVED: task complete`. Unlimited content and execution budget are the default unless the user specifies a limit.
 
 `supervised_execution` is distinct from `full_arena`: “complete arena” / “完全体 arena” selects supervisor-driven execution, while `full_arena` is the independent debate and synthesis workflow.

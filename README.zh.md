@@ -3,7 +3,7 @@
 > **面向 Claude Code × Codex 的证据优先多智能体辩论** —— 经得起交叉质询的第二意见。
 
 <p align="center">
-  <img src="assets/banner.png" alt="Agent Arena — 多智能体辩论、红队评审、证据核查与裁判工作流" width="100%">
+  <img src="assets/banner.zh.png" alt="Agent Arena 0.3.0 — 独立提案、交叉审核与修订验证；可选并行伴随检查和完全体监督" width="100%">
 </p>
 
 <p align="center">
@@ -11,7 +11,7 @@
   <a href="#claude-code"><img src="https://img.shields.io/badge/Claude%20Code-portable%20skill-6b46c1" alt="Claude Code"></a>
   <a href="#openai-codex"><img src="https://img.shields.io/badge/OpenAI%20Codex-portable%20skill-111827" alt="OpenAI Codex"></a>
   <a href="#hermes-agent"><img src="https://img.shields.io/badge/Hermes%20Agent-skill-059669" alt="Hermes Agent"></a>
-  <img src="https://img.shields.io/badge/version-0.2.8-informational" alt="version">
+  <img src="https://img.shields.io/badge/version-0.3.0-informational" alt="version">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
 </p>
 
@@ -27,11 +27,11 @@
 
 适用于支持自定义 skill、自定义指令或工具驱动委托的 **Claude Code、OpenAI Codex、Hermes Agent、OpenClaw、OpenCode、Copilot CLI 及其他 AI 编程 agent**。
 
-**支持其他模型后端。** 很多人通过 Anthropic 兼容代理在 Claude Code 上接入非 Anthropic 模型（GLM、DeepSeek、Qwen、Kimi、豆包），或通过 Codex 的 OpenAI 兼容 API 直接接入这些模型。Agent Arena 把不同的模型家族视为真正的异构参与者——因此你可以让 GLM 对阵 Codex、DeepSeek 对阵 Claude，或任意跨模型组合，而不仅限于 Anthropic vs OpenAI。详见 [Alternative Model Backends](skills/agent-arena/SKILL.md#alternative-model-backends)。
+**支持其他模型后端。** 很多人通过 Anthropic 兼容代理在 Claude Code 上接入非 Anthropic 模型（GLM、DeepSeek、Qwen、Kimi、豆包），或通过 Codex 的 OpenAI 兼容 API 直接接入这些模型。Agent Arena 把不同的模型家族视为真正的异构参与者——因此你可以让 GLM 对阵 Codex、DeepSeek 对阵 Claude，或任意跨模型组合，而不仅限于 Anthropic vs OpenAI。详见 [Alternative Model Backends](skills/agent-arena/references/runtime.md#preflight-and-identity)。
 
 > **协议说明：** Claude Code 走 Anthropic API 协议，Codex 走 OpenAI API 协议。GLM/DeepSeek/Qwen 等模型暴露 OpenAI 兼容 API，因此可直接接入 Codex；接入 Claude Code 则需经过代理（One API、LiteLLM 或厂商的 Anthropic 兼容端点）做协议转换。
 
-> **重要说明：** 本仓库是协议/指令型 skill，不是可执行的编排器。它不会自动安装、认证或调用 Codex、Claude Code 或任何其他 agent。跨 agent 执行取决于宿主 agent、本地 CLI 可用性、认证状态、沙箱权限、网络访问以及用户对敏感数据的授权。
+> **重要说明：** 本仓库是协议/指令型 skill，附带可选的本地结果解析器，不是可执行的编排器。它不会自动安装、认证或调用 Codex、Claude Code 或任何其他 agent。跨 agent 执行取决于宿主 agent、本地 CLI 可用性、认证状态、沙箱权限、网络访问以及用户对敏感数据的授权。
 
 本项目与 Anthropic、OpenAI、Hermes Agent、OpenClaw、OpenCode 及 GitHub Copilot 无隶属关系。
 
@@ -81,7 +81,7 @@ Agent Arena 提供一个可复用的协议：
 - [`agent-arena`](skills/agent-arena/SKILL.md) — 核心异构多智能体评审协议。
 - [`deliberative-analysis`](skills/deliberative-analysis/SKILL.md) — 轻量级伴侣 skill，用于对抗过度自信、防止隧道视野、寻找非显而易见的替代方案，并可升级到 Agent Arena 流程。
 
-**配套项目（独立仓库）：** [`groundcheck`](https://github.com/zhjai/groundcheck) — 单 agent、证据接地的事实核查,专治**幻觉**。Agent Arena 治过度自信(多 agent 辩论),groundcheck 治幻觉(单 agent 核查)。可作为**辩论前的事实门**接入:`refuted` 声明在辩论前打回原 agent。两者是同一验证栈的两个深度。
+**配套项目（独立仓库）：** [`groundcheck`](https://github.com/zhjai/groundcheck) — 单 agent、证据接地的事实核查,专治**幻觉**。Agent Arena 治过度自信(多 agent 辩论),groundcheck 治幻觉(单 agent 核查)。已安装时可选用作**辩论前的事实核查**:`refuted` 声明在辩论前打回原 agent。两者是同一验证栈的两个深度。
 
 ## 适用场景
 
@@ -109,6 +109,34 @@ Agent Arena 提供一个可复用的协议：
 ```text
 使用完全体 Arena 处理这个任务。让 Arena 规划并检查每一步，最后明确报告哪些成功、哪些失败及原因。
 ```
+
+## 伴随子代理：开启后自动并行检查
+
+使用 `companion_review` 时，先由用户确认强模型和思考深度。创建子代理后，主代理每完成一个步骤或修正就自动送检，**随即继续工作，不等待 PASS**。同一个子代理并行检查证据，发现问题及时反馈，主代理在下一个安全执行点处理；正常通过的检查不逐条打扰用户，也不需要用户反复说“让 Arena 检查”。
+
+伴随功能默认在当前主会话及其任务恢复中持续开启，直到用户明确关闭；任务结束后子代理可空闲等待下一项工作。待审队列不会阻塞主代理，只有具体阻断问题暂停受影响的工作；最终收尾再核对待审步骤和修正。默认不限制回合、轮数或总耗时。宿主实际存在的硬限制会如实披露，等待工具的一次返回超时不等于子代理超时，也不应因此取消它；skill 本身不能让子代理脱离宿主会话永久运行。
+
+它是可以叠加的伴随功能，允许使用同家族强模型。**Arena 的主功能仍是异构模型讨论和审核**：伴随子代理不替代异构参与者，不改写已保存的路线；开启伴随功能后仍可以照常让不同模型独立分析、交叉审核。
+
+```text
+开启伴随子代理模式，先和我确认强模型与思考深度。
+之后自动并行检查每一步，主代理继续工作，直到我明确关闭。
+```
+
+具体配置、队列、恢复与收尾规则见[伴随检查协议](skills/agent-arena/references/companion-review.md)。
+
+## 说“用 Arena 讨论”时，谁先设计？
+
+默认是主模型与异构参与者拿到相同请求、约束和原始证据，**各自独立形成方案，再交换方案交叉审核、修正和综合**。主模型可以并行起草自己的版本，但不会先把它的答案喂给其他模型。综合结果保留分歧和不确定性。
+
+| 用户请求 | 默认流程 |
+|---|---|
+| 讨论功能、代码设计 | 独立提出设计，再交叉审核（`design_debate` / `collaborative_design`） |
+| 讨论代码 Bug | 独立提出根因假说和验证办法，再相互质询（`bug_root_cause_arena`） |
+| 讨论分析、方案取舍 | 独立核查证据或提出选项，再批判修正（`evidence_arena` / `deliberative_analysis`） |
+| 审核这份已有方案或 diff | 直接共享该对象，各自独立审查（`implementation_plan_review` / `code_review_arena`） |
+| 开启伴随子代理 | 主代理规划并执行，子代理自动并行检查完成的步骤 |
+| 使用完全体 Arena | Arena 下达下一步，主代理执行并等待验收（`supervised_execution`） |
 
 ## 能力边界与安全限制
 
@@ -207,17 +235,35 @@ skills/agent-arena/SKILL.md
 skills/deliberative-analysis/SKILL.md
 ```
 
-若你的 agent 有自定义 skill 目录，将完整 skill 文件夹复制进去即可。否则将相关 `SKILL.md` 粘贴为指令说明。支持程度取决于宿主 agent，本仓库不提供平台专属的运行时适配器。
+若你的 agent 有自定义 skill 目录，将完整 skill 文件夹复制进去即可。否则提供 `SKILL.md` 及本次需要的关联 reference 作为指令说明。支持程度取决于宿主 agent，本仓库不提供平台专属的运行时适配器。
 
-首次在项目中调用 Arena 时，先用最小无害 completion 预检默认路线，再用一句话确认要记住的参与者路线。若默认路线失败，在同一次设置交互中只展示已经通过预检的替代路线；不得静默切换，也不要再发起第二轮路线问卷。用户点名的替代 harness 必须先预检，之后才保存或启动。路线预检不等于允许发送项目内容；向外部 agent 开放仓库或发送私有内容前，每次都要单独说明范围并取得用户批准。路线配置与运行产物应放在工作树外，或由宿主加入窄范围 `.gitignore`，不要默认提交。中文中可直接说“需要 arena”“讨论一下”“审核一下”“提交前审核”或“继续”；后者只有在存在未完成 checkpoint 时才恢复 Arena，否则继续普通任务。
+首次使用异构 Arena 时，预检后确认一次参与者路线；用户已明确指定时直接沿用。已批准的接收方、模型、内容和动作范围持续有效；保存路线本身不授予数据权限。失败时使用已批准的备用路线，或询问缺失的选择，不能静默更换精确模型/provider。配置和运行产物放在版本控制之外。详见[调用说明](skills/agent-arena/references/runtime.md)和[结果状态](skills/agent-arena/references/state-and-results.md)。
 
 ## 默认跨 agent 规则
 
-- 在 **Codex** 内运行时，若可用且被允许，默认邀请 **Claude Code** 作为对手。若有 shell 访问权限，Codex 应在降级到同模型子 agent 前先检查 `command -v claude && claude --version`；即使 Claude Code 未作为内置子 agent 工具暴露，外部 `claude` CLI 也算真正的异构对手。上下文最小化不应妨碍有效评审：允许 Claude Code 在已批准的仓库范围内读取相关源代码、文档、测试，但排除密钥、数据集、生成结果、私有日志及无关目录。证据集已经闭合时，传递带路径和行号的原始摘录，不要传递编排器自己的总结。对于非简单任务，应运行多轮批判/修正，而非单次调用。若用户要求共同设计或构建某物，使用 `collaborative_design` 模式，将 Claude Code 定位为共同设计者/架构合作方，而非仅仅是评审者。
-- 在 **Claude Code** 内运行时，先复用已保存路线或本次明确指定的路线；没有时才在预检后默认邀请 **Codex** 作为异构对手。若有 shell 访问权限，先检查 `command -v codex && codex --version`，每次复用路线都重新核对模型家族。
-- 在 **Hermes Agent**、**OpenClaw** 或其他编排器内运行时，遵循相同的首次路线确认和预检规则；路线设置完成前不要同时启动两个 agent。
-- 若对手不可用，须披露降级模式，不得伪装同模型角色扮演等同于异构对手。
-- 若任务涉及私有或敏感材料，须在发送给其他 agent 或服务前获得许可并最小化/脱敏上下文。
+优先使用用户明确选择，其次项目已保存路线，再使用当前代理与可用的不同模型家族。Codex 通常搭配 Claude Code，Claude 通常搭配 Codex；即使原生子代理列表没有外部 CLI，也要检查实际安装。异构性由实际模型家族决定。
+
+预检必须包含已认证的最小实际回答。复用已有授权，脱敏凭据，只对缺失授权或超出范围的变化提问。已有重试和备用路线授权继续有效。伴随配置独立保存，不替代异构参与者。
+
+## 什么时候结束
+
+- **讨论新方案**：先独立提出方案，再真实交换批评。后续轮次处理实质分歧、新证据或用户要求。
+- **审核已有对象**：一次充分的实质审核即可；发现分为阻塞、非阻塞、未知，可选建议不自动拦交付。
+- **要求直到收敛**：每个必需参与者明确接受同一最终版本，且无未解决实质阻塞；不能忽略仍在等待的参与者。非阻塞偏好可以保留。
+- **伴随与完全体**：保留各自终审规则，无默认轮次/耗时上限。
+
+修改后聚焦变化、依赖和受影响结果，仍可访问必要未改上下文。说明审核覆盖的是设计、代码、实际产物、运行容量还是实测效果，不能互相替代。每次结束明确报告模式、模型、成功、失败及原因、未完成范围。
+
+## 结果回收与验证
+
+可选的 [Claude 结果解析器](skills/agent-arena/scripts/arena_result.py)区分进程状态、失败原因、回答可用性和解析状态。它不判定审核通过、不启动调用、不修改原日志；不支持的格式可人工读取。详见[结果字段与示例](skills/agent-arena/references/state-and-results.md)。
+
+```bash
+python3 skills/agent-arena/scripts/arena_result.py /path/to/result.jsonl --process-state exited --exit-code 0
+python3 -m unittest discover -s tests -v
+```
+
+主文按需加载[模式说明](skills/agent-arena/references/modes.md)、[运行说明](skills/agent-arena/references/runtime.md)和专门模式协议。证据包示例见[审核操作指南](docs/running-reviews.md)。安装时复制整个 skill 目录，包含 references 和 scripts。
 
 ## 示例提示词
 
@@ -262,6 +308,7 @@ Agent Arena 支持以下模式：
 | `decision_memo_arena` | 高风险建议，含异议与不确定性 |
 | `tree_search` | 分支策略探索大型选项空间 |
 | `full_arena` | 完整流程：独立生成、证据核查、批判、修正、盲评、综合 |
+| `companion_review` | 持续启用的自动伴随层：确认模型和思考深度，子代理并行检查每步，主代理继续工作，最终收尾核对检查结果；不替代异构 Arena。 |
 | `supervised_execution` | Arena 逐步规划和验收；主 agent 执行首个计划步骤，后续步骤在 Arena 返回 `PASS` 后继续，并回传证据，最终复核后再转发详细答复。遇到 `RETRY` 按修正指令重试，遇到 `BLOCKED` 停下处理。仅需答复的请求也要最终复核，只有 `APPROVED: task complete` 才能结束。内容和执行预算默认不设限，除非用户明确指定。 |
 
 `supervised_execution` 与 `full_arena` 不同：“完全体 arena” / “complete arena” 选择前者的监督执行流程，`full_arena` 仍是独立生成、批判和综合流程。

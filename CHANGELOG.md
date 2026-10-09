@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.3.0
+
+- Refresh the English and Chinese homepage banners with editable SVG sources, the independent discussion flow, and optional companion/supervised modes.
+
+- Reorganize Arena into a concise core and references for modes, runtime, state/results and supervision; preserve the existing companion overlay and all mode names.
+- Carry user decisions and corrections into evidence packets; classify blockers, optional advice and unknowns; retain authorized scope and avoid repeated approval prompts.
+- Keep independent proposals and real cross-review for discussions, allow sufficient one-pass artifact reviews, and define explicit same-revision acceptance when the user requests convergence.
+- Replace universal turn floors and old retry-count heuristics with evidence-based diagnosis and existing user retry authorization. Historical v0.2.5 “Cap retries at 2” guidance is superseded by the current runtime contract.
+- Correct Claude tools/stdin/directory guidance, make groundcheck optional, and separate execution, answer, parsing and review outcomes. Add an optional read-only Claude result parser and parser fixture tests.
+- Preserve historical release notes below as history; use the current skill and references for operating instructions.
+
+- Add `companion_review`, a persistent opt-in overlay: confirm the strong subagent model and reasoning effort, automatically submit each completed step for concurrent review, keep primary work moving, and address findings without repeated user prompts. Reuse the child until disabled, with no default turn or elapsed-time caps and explicit host-limit disclosure.
+- Keep companion state separate from heterogeneous Arena routes and modes; reconcile pending reviews and corrections at task completion without disabling the overlay.
+- Clarify that Arena discussion starts with independent proposals before cross-review, while a requested review of an existing plan or diff shares that artifact directly. Add portable companion guidance and bilingual examples.
+
 ## v0.2.8
 
 - **Add `supervised_execution` mode.** Arena plans and verifies; the primary agent executes one Arena-authorized step at a time and returns raw evidence; every step is checked, answer-only requests receive a final Arena review, and only `APPROVED: task complete` completes the run. Content, context, tool discovery, turns, step attempts, and elapsed time are unlimited unless the user sets a limit; privacy, redaction, least privilege, irreversible-action human approval, and liveness protections still apply.
